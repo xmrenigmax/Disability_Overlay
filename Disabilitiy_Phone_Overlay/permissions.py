@@ -1,4 +1,5 @@
 from kivy.utils import platform
+from kivy.core.window import Window
 
 def request_permissions(callback):
     if platform == 'android':
@@ -44,3 +45,10 @@ def request_permissions(callback):
     else:
         # If not on Android, Windows, or iOS, assume permissions are granted
         callback(True)
+
+def on_permissions_granted(granted):
+    if granted:
+        # Ensure fullscreen is restored
+        Window.fullscreen = True
+        Window.maximize()
+        # Rest of your permission handling code...
