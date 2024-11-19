@@ -22,29 +22,32 @@ def request_permissions(callback):
     elif platform == 'win':
         try:
             import ctypes
-            user32 = ctypes.windll.user32
-            if user32.MessageBoxW(0, "Allow access to camera and microphone?", "Permissions", 1) == 1:
-                callback(True)
-            else:
-                callback(False)
+            import win32gui
+            import win32con
+             # Get current window handle
+            hwnd = win32gui.GetForegroundWindow()
+            
+            # Set window always on top
+            win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, 
+                                win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+            
+            # Show permission dialog
+            result = ctypes.windll.user32.MessageBoxW(
+                hwnd,
+                "Allow access to camera and microphone?",
+                "Permissions",
+                1 | win32con.MB_TOPMOST  # Make dialog topmost
+            )
+            
+            # Reset window state
+            win32gui.SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 0, 0,
+                                win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+            
+            callback(result == 1)
+            
         except ImportError:
-            # Handle the case where ctypes is not available
-            callback(False)
-    elif platform == 'ios':
-        try:
-            from pyobjus import autoclass # type: ignore
-            AVAuthorizationStatusAuthorized = 3
-            AVAuthorizationStatus = autoclass('AVCaptureDevice').authorizationStatusForMediaType_('vide')
-            if AVAuthorizationStatus == AVAuthorizationStatusAuthorized:
-                callback(True)
-            else:
-                callback(False)
-        except ImportError:
-            # Handle the case where pyobjus is not available
-            callback(False)
-    else:
         # If not on Android, Windows, or iOS, assume permissions are granted
-        callback(True)
+            callback(True)
 
 def on_permissions_granted(granted):
     if granted:

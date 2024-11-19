@@ -1,37 +1,43 @@
+# loading_screen.py
 from kivy.uix.screenmanager import Screen
-from kivy.uix.label import Label
-from kivy.uix.progressbar import ProgressBar
+from kivy.app import App
 from kivy.clock import Clock
+from kivy.uix.progressbar import ProgressBar
+from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 
 class LoadingScreen(Screen):
     def __init__(self, **kwargs):
         super(LoadingScreen, self).__init__(**kwargs)
+        self.layout = BoxLayout(orientation='vertical')
+        self.progress = ProgressBar(max=100)
+        self.status_label = Label(text="Initializing...")
         
-        # Create a vertical BoxLayout to hold the label and progress bar
-        self.layout = BoxLayout(orientation='vertical', padding=10, spacing=10, size_hint=(0.8, 0.2), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        
-        # Create a label to display "Loading..."
-        self.label = Label(text="Loading...", font_size='20sp', size_hint=(1, 0.5))
-        
-        # Create a progress bar with a maximum value of 1000
-        self.progress_bar = ProgressBar(max=1000, size_hint=(1, 0.5))
-        
-        # Add the label and progress bar to the layout
-        self.layout.add_widget(self.label)
-        self.layout.add_widget(self.progress_bar)
-        
-        # Add the layout to the screen
+        self.layout.add_widget(self.status_label)
+        self.layout.add_widget(self.progress)
         self.add_widget(self.layout)
         
-        # Schedule the update of the progress bar
-        Clock.schedule_interval(self.update_progress_bar, 0.1)
+        # Start initialization process
+        Clock.schedule_once(self.start_loading, 0)
         
-    def update_progress_bar(self, dt):
-        # Update the value of the progress bar
-        if self.progress_bar.value < self.progress_bar.max:
-            self.progress_bar.value += 50  # Increase the increment value to make it faster
-        else:
-            # Switch to the main screen when loading is complete
-            self.manager.current = 'main'
-            Clock.unschedule(self.update_progress_bar)
+    def start_loading(self, dt):
+        """Start the loading process"""
+        self.progress.value = 0
+        Clock.schedule_interval(self.update_progress, 0.1)
+        # Initialize camera with proper dt parameter
+        Clock.schedule_once(self.initialize_camera, 0)
+        
+    def initialize_camera(self, dt):
+        """Initialize the camera screen"""
+        app = App.get_running_app()
+        camera_screen = app.screen_manager.get_screen('full_screen_camera')
+        if camera_screen:
+            Clock.schedule_once(camera_screen.initialize_camera, 0)
+        
+    def update_progress(self, dt):
+        """Update progress bar and switch screens when done"""
+        self.progress.value += 5
+        if self.progress.value >= 100:
+            app = App.get_running_app()
+            app.screen_manager.current = 'main'
+            return False  # Stop the interval
