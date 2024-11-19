@@ -1,0 +1,20 @@
+Text Detection & Capture System
+- OCR (Optical Character Recognition) using pytesseract
+- Real-time text detection overlay
+- Text selection/grabbing mechanism
+Text Manipulation Features
+- Font style/size adjustment
+- Color filters for colorblindness
+- Language translation
+- Synonyms lookup
+Save preferences
+
+
+To implement:
+
+Add text selection highlighting
+Create color filter selection UI
+Add translation options menu
+Create preferences saving system
+Add synonym lookup on text selection
+Implement text style modification options

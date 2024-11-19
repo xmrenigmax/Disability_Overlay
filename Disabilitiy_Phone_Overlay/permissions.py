@@ -4,7 +4,7 @@ from kivy.core.window import Window
 def request_permissions(callback):
     if platform == 'android':
         try:
-            from android.permissions import request_permissions, Permission
+            from android.permissions import request_permissions, Permission # type: ignore
         except ImportError:
             # Handle the case where the android.permissions module is not available
             callback(False)
@@ -32,7 +32,7 @@ def request_permissions(callback):
             callback(False)
     elif platform == 'ios':
         try:
-            from pyobjus import autoclass
+            from pyobjus import autoclass # type: ignore
             AVAuthorizationStatusAuthorized = 3
             AVAuthorizationStatus = autoclass('AVCaptureDevice').authorizationStatusForMediaType_('vide')
             if AVAuthorizationStatus == AVAuthorizationStatusAuthorized:
