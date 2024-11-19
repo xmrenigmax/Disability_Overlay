@@ -18,3 +18,9 @@ Add translation options menu
 Create preferences saving system
 Add synonym lookup on text selection
 Implement text style modification options
+
+Requirements:
+
+Windows: opencv-python
+Android: Add camera permission to buildozer.spec
+iOS: Add camera usage description to Info.plist
