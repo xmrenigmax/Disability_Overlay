@@ -1,5 +1,4 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:8-jdk
+FROM python:3.9-slim
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
@@ -47,32 +46,17 @@ RUN apt-get update && apt-get install -y \
     libice6 \
     xvfb
 
-# Set environment variables
-ENV ANDROID_SDK_ROOT=/sdk
-ENV PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/emulator
-
-# Download and install Android SDK command line tools
-RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip -O /sdk-tools.zip && \
-    mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
-    unzip /sdk-tools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
-    mv ${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools/* ${ANDROID_SDK_ROOT}/cmdline-tools/latest/ && \
-    rm -rf ${ANDROID_SDK_ROOT}/cmdline-tools/latest/cmdline-tools && \
-    rm /sdk-tools.zip
-
-# Accept licenses
-RUN yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
-
-# Install necessary SDK packages
-RUN ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30"
-
-# Install a single system image
-RUN ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "system-images;android-29;google_apis;x86"
-
-# Install Android Emulator
-RUN ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "emulator"
-
 # Set the working directory
-WORKDIR /workspace
+WORKDIR /app
 
-# Default command
-CMD ["bash"]
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
+
+# Run main_app.py when the container launches
+CMD ["python", "main_app.py"]
