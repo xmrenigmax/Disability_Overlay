@@ -4,9 +4,11 @@ from kivy.uix.button import Button
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label  # Add this import
 from kivy.app import App
-from permissions import Permissions
 from kivy.core.window import Window
+from camera_overlay import CameraOverlay
+from permissions import request_permissions
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -55,54 +57,47 @@ class MainScreen(Screen):
         self.buttons_layout.add_widget(self.main_button)
     
     def show_scanner_overlay(self, instance):
-        # Create the overlay layout
-        overlay_layout = FloatLayout()
+        def on_permissions_granted(granted):
+            if granted:
+                # Create the overlay layout
+                overlay_layout = FloatLayout()
+                
+                # Create a vertical BoxLayout for the scanner options
+                scanner_layout = BoxLayout(orientation='vertical', size_hint=(None, None), size=('200dp', '300dp'), pos_hint={'x': 0, 'center_y': 0.5}, spacing=10)
+                
+                # Add scanner options to the layout
+                for option in ["Camera Assistance", "Image Assistance", "Saved History"]:
+                    btn = Button(text=option, size_hint_y=None, height=44)
+                    if option == "Camera Assistance":
+                        btn.bind(on_release=lambda x: self.handle_camera_assistance(popup))
+                    scanner_layout.add_widget(btn)
+                
+                # Add a close button to the overlay
+                close_button = Button(text='Close', size_hint=(None, None), size=('100dp', '48dp'), pos_hint={'right': 1, 'top': 1})
+                close_button.bind(on_release=lambda x: self.close_scanner_overlay(popup))
+                
+                # Add the scanner layout and close button to the overlay layout
+                overlay_layout.add_widget(scanner_layout)
+                overlay_layout.add_widget(close_button)
+                
+                # Create a popup to display the overlay
+                popup = Popup(title='Scanner Overlay', content=overlay_layout, size_hint=(0.8, 0.8))
+                popup.open()
+            else:
+                # Show a message to the user that permissions are required
+                popup = Popup(title='Permissions Required', content=Label(text='Camera and Microphone permissions are required to use this feature.'), size_hint=(0.8, 0.4))
+                popup.open()
         
-        # Create a vertical BoxLayout for the scanner options
-        scanner_layout = BoxLayout(orientation='vertical', size_hint=(None, None), size=('200dp', '300dp'), pos_hint={'x': 0, 'center_y': 0.5}, spacing=10)
-        
-        # Add scanner options to the layout
-        for option in ["Camera Assistance", "Image Assistance", "Saved History"]:
-            btn = Button(text=option, size_hint_y=None, height=44)
-            if option == "Camera Assistance":
-                btn.bind(on_release=lambda x: self.handle_camera_assistance(popup))
-            scanner_layout.add_widget(btn)
-        
-        # Add a close button to the overlay
-        close_button = Button(text='Close', size_hint=(None, None), size=('100dp', '48dp'), pos_hint={'right': 1, 'top': 1})
-        close_button.bind(on_release=lambda x: self.close_scanner_overlay(popup))
-        
-        # Add the scanner layout and close button to the overlay layout
-        overlay_layout.add_widget(scanner_layout)
-        overlay_layout.add_widget(close_button)
-        
-        # Create a popup to display the overlay
-        popup = Popup(title='Scanner Overlay', content=overlay_layout, size_hint=(0.8, 0.8))
-        popup.open()
-
+        request_permissions(on_permissions_granted)
+    
     def close_scanner_overlay(self, popup):
         # Close the popup
         popup.dismiss()
-
+    
     def handle_camera_assistance(self, popup):
-        # Close the current popup
-        self.close_scanner_overlay(popup)
-        
-        # Check if permissions are already granted
-        permission_status = Permissions.load_permission_status()
-        if permission_status is True:
-            # Open the full-screen camera
-            self.open_full_screen_camera()
-        else:
-            # Open the camera overlay to request permissions
-            from camera_overlay import CameraOverlay
-            camera_overlay = CameraOverlay()
-            camera_overlay.open()
-
-    def open_full_screen_camera(self):
-        # Open the full-screen camera
-        app = App.get_running_app()
-        app.root.current = 'full_screen_camera'
+        # Close the popup and switch to the full-screen camera view
+        popup.dismiss()
+        self.manager.current = 'full_screen_camera'
     
     def return_to_main_menu(self):
         # Return to the main menu

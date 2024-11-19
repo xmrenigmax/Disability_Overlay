@@ -1,31 +1,46 @@
-import os
-import json
+from kivy.utils import platform
 
-class Permissions:
-    CACHE_FILE = 'permissions_cache.json'
-
-    @staticmethod
-    def check_camera_permission():
-        # This is a placeholder for actual permission checking logic
-        # You would need to implement platform-specific permission checks here
-        return True
-
-    @staticmethod
-    def request_camera_permission():
-        # This is a placeholder for actual permission requesting logic
-        # You would need to implement platform-specific permission requests here
-        Permissions.save_permission_status(True)
-        return True
-
-    @staticmethod
-    def save_permission_status(granted):
-        with open(Permissions.CACHE_FILE, 'w') as f:
-            json.dump({'camera_permission': granted}, f)
-
-    @staticmethod
-    def load_permission_status():
-        if os.path.exists(Permissions.CACHE_FILE):
-            with open(Permissions.CACHE_FILE, 'r') as f:
-                data = json.load(f)
-                return data.get('camera_permission', False)
-        return False
+def request_permissions(callback):
+    if platform == 'android':
+        try:
+            from android.permissions import request_permissions, Permission
+        except ImportError:
+            # Handle the case where the android.permissions module is not available
+            callback(False)
+            return
+        
+        permissions = [Permission.CAMERA, Permission.RECORD_AUDIO]
+        
+        def on_permissions_result(permissions, grants):
+            if all(grants):
+                callback(True)
+            else:
+                callback(False)
+        
+        request_permissions(permissions, on_permissions_result)
+    elif platform == 'win':
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            if user32.MessageBoxW(0, "Allow access to camera and microphone?", "Permissions", 1) == 1:
+                callback(True)
+            else:
+                callback(False)
+        except ImportError:
+            # Handle the case where ctypes is not available
+            callback(False)
+    elif platform == 'ios':
+        try:
+            from pyobjus import autoclass
+            AVAuthorizationStatusAuthorized = 3
+            AVAuthorizationStatus = autoclass('AVCaptureDevice').authorizationStatusForMediaType_('vide')
+            if AVAuthorizationStatus == AVAuthorizationStatusAuthorized:
+                callback(True)
+            else:
+                callback(False)
+        except ImportError:
+            # Handle the case where pyobjus is not available
+            callback(False)
+    else:
+        # If not on Android, Windows, or iOS, assume permissions are granted
+        callback(True)
