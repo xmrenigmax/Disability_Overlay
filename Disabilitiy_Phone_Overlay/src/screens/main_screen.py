@@ -1,33 +1,25 @@
 # src/screens/main_screen.py
 from kivy.uix.screenmanager import Screen
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.metrics import dp
-from kivy.logger import Logger
 from kivy.app import App
+from kivy.logger import Logger
 
 from ..core.config import AppConfig
-from ..utils.permissions import request_permissions
 from ..ui.popups import TextToolsPopup
 
 class MainScreen(Screen):
     """
     Main application screen with feature buttons and navigation.
-    
-    Features:
-    - Scanner access
-    - Accessibility options
-    - Feature grid layout
-    - Platform-specific UI adjustments
     """
     
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.config = AppConfig()
-        self._current_popup = None
         
         # Create main layout
         self.main_layout = BoxLayout(
@@ -72,13 +64,8 @@ class MainScreen(Screen):
                 'callback': self.show_scanner_options
             },
             {
-                'text': 'Color Filters',
-                'color': self.config.COLORS['secondary'],
-                'callback': self.show_color_filters
-            },
-            {
                 'text': 'Text Tools',
-                'color': self.config.COLORS['accent'],
+                'color': self.config.COLORS['secondary'],
                 'callback': self.show_text_tools
             },
             {
@@ -122,23 +109,10 @@ class MainScreen(Screen):
                 btn = Button(
                     text=text,
                     size_hint_y=None,
-                    height=dp(50),
-                    background_normal='',
-                    background_color=self.config.COLORS['primary']
+                    height=dp(50)
                 )
                 btn.bind(on_release=lambda x, cb=callback: self.handle_scanner_selection(cb))
                 content.add_widget(btn)
-                
-            # Cancel button
-            cancel_btn = Button(
-                text='Cancel',
-                size_hint_y=None,
-                height=dp(40),
-                background_normal='',
-                background_color=(0.3, 0.3, 0.3, 1)
-            )
-            
-            content.add_widget(cancel_btn)
             
             # Create popup
             self._current_popup = Popup(
@@ -147,58 +121,40 @@ class MainScreen(Screen):
                 size_hint=(0.8, 0.6),
                 auto_dismiss=True
             )
-            
-            cancel_btn.bind(on_release=self._current_popup.dismiss)
             self._current_popup.open()
             
         except Exception as e:
             Logger.error(f'Scanner options failed: {str(e)}')
 
-    def handle_scanner_selection(self, callback):
-        """Handle scanner selection with permission check"""
-        try:
-            def permission_callback(granted):
-                if granted:
-                    if self._current_popup:
-                        self._current_popup.dismiss()
-                    callback()
-                else:
-                    self.show_permission_denied()
-                    
-            request_permissions(permission_callback)
-            
-        except Exception as e:
-            Logger.error(f'Scanner selection failed: {str(e)}')
-
-    def open_camera_scanner(self):
-        """Open camera scanner screen"""
-        app = App.get_running_app()
-        app.switch_screen('camera')
-
-    def open_file_scanner(self):
-        """Open file scanner"""
-        # Implement file scanner
-        pass
-
-    def open_quick_scanner(self):
-        """Open quick scanner mode"""
-        # Implement quick scanner
-        pass
-
-    def show_color_filters(self, instance):
-        """Show color filter options"""
-        # Implement color filters
-        pass
-
     def show_text_tools(self, instance):
         """Show text tools popup"""
-        popup = TextToolsPopup()
-        popup.open()
+        try:
+            popup = TextToolsPopup()
+            popup.open()
+        except Exception as e:
+            Logger.error(f'Text tools failed: {str(e)}')
 
     def show_settings(self, instance):
         """Show settings screen"""
-        # Implement settings
-        pass
+        try:
+            app = App.get_running_app()
+            app.switch_screen('settings')
+        except Exception as e:
+            Logger.error(f'Settings navigation failed: {str(e)}')
+
+    def handle_scanner_selection(self, callback):
+        """Handle scanner selection with permission check"""
+        from ..utils.permissions import request_permissions
+        
+        def permission_callback(granted):
+            if granted:
+                if self._current_popup:
+                    self._current_popup.dismiss()
+                callback()
+            else:
+                self.show_permission_denied()
+                
+        request_permissions(permission_callback)
 
     def show_permission_denied(self):
         """Show permission denied message"""
@@ -209,7 +165,17 @@ class MainScreen(Screen):
         )
         popup.open()
 
-    def show_text_features(self, instance):
-        """Show text features popup"""
-        popup = TextToolsPopup()
-        popup.open()
+    def open_camera_scanner(self):
+        """Open camera scanner screen"""
+        app = App.get_running_app()
+        app.switch_screen('camera')
+
+    def open_file_scanner(self):
+        """Open file scanner"""
+        # Implementation needed
+        pass
+
+    def open_quick_scanner(self):
+        """Open quick scanner mode"""
+        # Implementation needed
+        pass
