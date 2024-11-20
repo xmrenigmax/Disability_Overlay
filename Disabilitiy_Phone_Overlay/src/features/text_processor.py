@@ -8,6 +8,8 @@ from ..core.config import AppConfig
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from ..ui.popups import WordDetailsPopup
+from kivy.core.clipboard import Clipboard
+import re
 
 class TextProcessor:
     """
@@ -151,6 +153,28 @@ class TextProcessor:
         except Exception as e:
             logger.error(f"Word lookup failed: {str(e)}")
             return {'definitions': [], 'synonyms': [], 'examples': []}
+
+    def process_text(self, text: str) -> List[str]:
+        """Split text into processable words"""
+        # Remove special characters and split
+        words = re.findall(r'\b\w+\b', text.lower())
+        return words
+
+    def copy_to_clipboard(self, text: str) -> None:
+        """Copy text to system clipboard"""
+        Clipboard.copy(text)
+
+    def get_selected_word_context(self, text: str, word: str, 
+                                context_words: int = 3) -> str:
+        """Get surrounding context for selected word"""
+        words = text.split()
+        try:
+            word_index = words.index(word)
+            start = max(0, word_index - context_words)
+            end = min(len(words), word_index + context_words + 1)
+            return ' '.join(words[start:end])
+        except ValueError:
+            return word
 
 # Global text processor instance
 text_processor = TextProcessor()

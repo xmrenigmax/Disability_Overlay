@@ -11,6 +11,7 @@ from kivy.app import App
 
 from ..core.config import AppConfig
 from ..utils.permissions import request_permissions
+from ..ui.popups import TextToolsPopup
 
 class MainScreen(Screen):
     """
@@ -190,9 +191,9 @@ class MainScreen(Screen):
         pass
 
     def show_text_tools(self, instance):
-        """Show text manipulation tools"""
-        # Implement text tools
-        pass
+        """Show text tools popup"""
+        popup = TextToolsPopup()
+        popup.open()
 
     def show_settings(self, instance):
         """Show settings screen"""
@@ -206,4 +207,9 @@ class MainScreen(Screen):
             content=Label(text='Camera permission is required\nfor scanner functionality'),
             size_hint=(0.8, 0.4)
         )
+        popup.open()
+
+    def show_text_features(self, instance):
+        """Show text features popup"""
+        popup = TextToolsPopup()
         popup.open()

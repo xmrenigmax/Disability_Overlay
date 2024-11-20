@@ -2,6 +2,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.slider import Slider
 from kivy.uix.image import Image
@@ -17,6 +18,7 @@ from ..camera.manager import CameraManager
 from ..camera.filters import ColorFilters
 from ..core.config import AppConfig
 from ..ui.popups import WordDetailsPopup
+from ..ui.widgets import SelectableWord
 
 class CameraScreen(Screen):
     """
@@ -203,8 +205,47 @@ class CameraScreen(Screen):
         )
         popup.open()
         
+    def create_text_overlay(self, text: str):
+        """Create interactive text overlay"""
+        words_layout = BoxLayout(
+            orientation='horizontal',
+            size_hint=(None, None),
+            spacing=dp(5),
+            padding=dp(10)
+        )
+        
+        # Process text into words
+        words = self.text_processor.process_text(text)
+        
+        # Create selectable words
+        for word in words:
+            word_label = SelectableWord(
+                text=word,
+                size_hint=(None, None),
+                height=dp(40)
+            )
+            word_label.bind(on_release=lambda x, w=word: self.on_word_selected(w))
+            words_layout.add_widget(word_label)
+            
+        # Add to overlay
+        self.overlay_layout.clear_widgets()
+        self.overlay_layout.add_widget(words_layout)
+
     def on_word_selected(self, word: str):
         """Handle word selection"""
+        # Get word details
         details = self.text_processor.get_word_details(word)
-        popup = WordDetailsPopup(word, details)
+        
+        # Get context
+        context = self.text_processor.get_selected_word_context(
+            self.current_text,
+            word
+        )
+        
+        # Show popup with details
+        popup = WordDetailsPopup(
+            word=word,
+            details=details,
+            context=context
+        )
         popup.open()
