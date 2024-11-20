@@ -1,9 +1,9 @@
 # src/__init__.py
 import os
-import sys
 from pathlib import Path
+import sys
 
-# Add package root to Python path
-package_root = Path(__file__).parent
-if str(package_root) not in sys.path:
-    sys.path.insert(0, str(package_root))
+# Add src directory to Python path
+SRC_DIR = Path(__file__).parent
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))

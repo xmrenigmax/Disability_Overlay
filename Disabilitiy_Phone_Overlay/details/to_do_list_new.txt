@@ -62,51 +62,56 @@ hierachy:
 
 project_root/
 ├── src/
-│   ├── auth/                    # New: Authentication system
+│   ├── auth/                    # Authentication system
 │   │   ├── __init__.py
 │   │   ├── auth_manager.py      # User authentication handling
 │   │   ├── profile.py          # User profile management
-│   │   └── storage.py          # Secure data storage
+│   │   ├── storage.py          # Secure data storage
+│   │   └── oauth.py            # OAuth implementation (New)
 │   │
-│   ├── database/               # New: Data persistence
+│   ├── database/               # Data persistence
 │   │   ├── __init__.py
 │   │   ├── models.py           # Database models
 │   │   ├── history.py          # History tracking
-│   │   └── filter_store.py     # Filter persistence
+│   │   ├── filter_store.py     # Filter persistence
+│   │   └── cache.py           # Cache management (New)
 │   │
-│   ├── overlay/                # New: App overlay feature
+│   ├── features/              # Core features
 │   │   ├── __init__.py
-│   │   ├── overlay_screen.py   # Overlay UI
+│   │   ├── text_processor.py   # Text processing
+│   │   ├── translation.py      # Translation services
+│   │   ├── accessibility.py    # Accessibility features
+│   │   └── profanity.py       # Profanity filter (New)
+│   │
+│   ├── monetization/          # Monetization system (New)
+│   │   ├── __init__.py
+│   │   ├── ads_manager.py     # Advertisement handling
+│   │   ├── premium.py         # Premium features
+│   │   └── payments.py        # Payment processing
+│   │
+│   ├── overlay/               # App overlay feature
+│   │   ├── __init__.py
+│   │   ├── overlay_screen.py  # Overlay UI
 │   │   └── platform_handler.py # Platform-specific overlay
 │   │
-│   ├── settings/               # New: Settings management
+│   ├── settings/              # Settings management
 │   │   ├── __init__.py
-│   │   ├── settings_screen.py  # Settings UI
-│   │   └── preferences.py      # User preferences
+│   │   ├── settings_screen.py # Settings UI
+│   │   └── preferences.py     # User preferences
 │   │
-│   ├── ui/                     # New: Shared UI components
+│   ├── ui/                    # UI components
 │   │   ├── __init__.py
-│   │   ├── popups.py          # Reusable popups
-│   │   ├── widgets.py         # Custom widgets
-│   │   └── themes.py          # UI themes
+│   │   ├── popups.py         # Popup dialogs
+│   │   ├── widgets.py        # Custom widgets
+│   │   └── themes.py         # UI themes
 │   │
-│   ├── core/                   # Existing core components
-│   ├── screens/                # Existing screens
-│   ├── camera/                 # Existing camera
-│   ├── features/              # Existing features
-│   └── utils/                 # Existing utils
-│
-├── tests/                     # New: Test suite
-│   ├── __init__.py
-│   └── test_*.py             # Test files
-│
-├── docs/                      # New: Documentation
-│   ├── api/
-│   └── user_guide/
-│
-├── build/                     # New: Build configurations
-│   ├── android/              # Android build files
-│   ├── ios/                  # iOS build files
-│   └── windows/              # Windows build files
-│
-└── main.py                   # Application entry point
+│   └── store/                # App store compliance (New)
+       ├── __init__.py
+       ├── google_play.py     # Google Play requirements
+       ├── app_store.py       # Apple Store requirements
+       └── microsoft.py       # Microsoft Store requirements
+
+├── tests/                    # Test suite
+├── docs/                     # Documentation
+├── build/                    # Build configurations
+└── main.py                  # Application entry point
