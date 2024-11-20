@@ -69,25 +69,23 @@ class MainApp(App):
             Logger.error(f'Android permissions failed: {str(e)}')
             
     def build(self):
-        """Initialize application UI and screens"""
+        """Initialize application UI"""
         try:
             # Create screen manager
             self.screen_manager = ScreenManager(transition=NoTransition())
             
-            # Initialize screens
+            # Add screens in correct order
             screens = {
+                'loading': LoadingScreen(name='loading'),  # First
                 'main': MainScreen(name='main'),
-                'loading': LoadingScreen(name='loading'),
                 'camera': CameraScreen(name='camera')
             }
             
-            # Add screens to manager
             for screen in screens.values():
                 self.screen_manager.add_widget(screen)
-                
-            # Set initial screen
-            self.screen_manager.current = 'main'
-            self._screens_initialized = True
+            
+            # Explicitly set initial screen
+            self.screen_manager.current = 'loading'
             
             return self.screen_manager
             

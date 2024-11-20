@@ -150,3 +150,7 @@ class LoadingScreen(Screen):
             app.switch_screen('main')
         except Exception as e:
             Logger.error(f'Transition failed: {str(e)}')
+            
+    def on_enter(self):
+        """Called when screen is entered"""
+        self.start_loading(0)
