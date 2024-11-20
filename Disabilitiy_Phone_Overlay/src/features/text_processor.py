@@ -5,6 +5,9 @@ import pytesseract
 from typing import List, Dict, Tuple, Optional
 from ..utils.logger import app_logger as logger
 from ..core.config import AppConfig
+from nltk.corpus import wordnet
+from nltk.tokenize import word_tokenize
+from ..ui.popups import WordDetailsPopup
 
 class TextProcessor:
     """
@@ -21,6 +24,14 @@ class TextProcessor:
         self.selected_text = None
         self.detected_regions = []
         
+        # Initialize NLTK first time
+        try:
+            import nltk
+            nltk.download('wordnet')
+            nltk.download('punkt')
+        except Exception as e:
+            logger.error(f"NLTK initialization failed: {str(e)}")
+    
     def detect_text(self, frame: np.ndarray) -> List[Dict[str, any]]:
         """
         Detect text regions in frame
@@ -107,6 +118,39 @@ class TextProcessor:
     def clear_selection(self) -> None:
         """Clear current text selection"""
         self.selected_text = None
+
+    def get_word_details(self, word: str) -> Dict[str, List[str]]:
+        """Get word definitions and synonyms"""
+        try:
+            details = {
+                'definitions': [],
+                'synonyms': set(),
+                'examples': []
+            }
+            
+            # Get synsets for word
+            synsets = wordnet.synsets(word)
+            
+            for synset in synsets:
+                # Add definition
+                details['definitions'].append(synset.definition())
+                
+                # Add examples
+                details['examples'].extend(synset.examples())
+                
+                # Add synonyms
+                for lemma in synset.lemmas():
+                    if lemma.name() != word:
+                        details['synonyms'].add(lemma.name())
+            
+            # Convert to list and sort
+            details['synonyms'] = sorted(list(details['synonyms']))
+            
+            return details
+            
+        except Exception as e:
+            logger.error(f"Word lookup failed: {str(e)}")
+            return {'definitions': [], 'synonyms': [], 'examples': []}
 
 # Global text processor instance
 text_processor = TextProcessor()

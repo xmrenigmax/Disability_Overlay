@@ -1,3 +1,9 @@
 kivy
 pytesseract
 Pillow
+
+Requirements:
+
+Windows: opencv-python
+Android: Add camera permission to buildozer.spec
+iOS: Add camera usage description to Info.plist

@@ -16,6 +16,7 @@ import cv2
 from ..camera.manager import CameraManager
 from ..camera.filters import ColorFilters
 from ..core.config import AppConfig
+from ..ui.popups import WordDetailsPopup
 
 class CameraScreen(Screen):
     """
@@ -200,4 +201,10 @@ class CameraScreen(Screen):
             size_hint=(None, None),
             size=(400, 200)
         )
+        popup.open()
+        
+    def on_word_selected(self, word: str):
+        """Handle word selection"""
+        details = self.text_processor.get_word_details(word)
+        popup = WordDetailsPopup(word, details)
         popup.open()
