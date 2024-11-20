@@ -48,43 +48,24 @@ class CameraManager:
             return [(0, "Default")]  # Mobile platforms use default
 
     def initialize(self, camera_index: int = 0) -> bool:
-        """
-        Initialize camera with platform-specific settings
-        
-        Args:
-            camera_index: Index of camera to initialize
-        """
+        """Initialize camera with index"""
         try:
             self.current_index = camera_index
+            self.capture = cv2.VideoCapture(camera_index)
             
-            for api, name in self.apis:
-                try:
-                    if isinstance(api, int):
-                        self.capture = cv2.VideoCapture(camera_index + api)
-                    else:
-                        self.capture = cv2.VideoCapture(camera_index)
-                        
-                    if self.capture.isOpened():
-                        ret, frame = self.capture.read()
-                        if ret and frame is not None:
-                            self.current_api = api
-                            self.is_active = True
-                            Logger.info(f'Camera initialized with {name}')
-                            return True
-                            
-                        self.capture.release()
-                        
-                except Exception as e:
-                    Logger.warning(f'Failed with {name}: {str(e)}')
-                    if self.capture:
-                        self.capture.release()
-                    continue
+            if self.capture.isOpened():
+                # Test frame capture
+                ret, frame = self.capture.read()
+                if ret and frame is not None:
+                    self.is_active = True
+                    return True
                     
-            Logger.error('Failed to initialize camera with any API')
+            self.release()
             return False
             
         except Exception as e:
-            Logger.error(f'Camera initialization failed: {str(e)}')
+            Logger.error(f"Camera initialization failed: {str(e)}")
+            self.release()
             return False
 
     def get_frame(self) -> Optional[np.ndarray]:
