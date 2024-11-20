@@ -1,36 +1,61 @@
 1. Text Enhancement Features
-    - Add WordNet integration for thesaurus/dictionary
-    - Create popup UI for word definitions
-    - Add synonyms display
-    - Update text_processor.py
-2. Camera Filter System
-    - Create filter popup menu with 3 sections:
+    - Add WordNet integration for thesaurus/dictionary ✅
+    - Create popup UI for word definitions             ✅
+    - Add synonyms display                             ✅
+    - Update text_processor.py                         ✅
+
+2. Filter uses.
+    - remove prophanic language from scans, and uses "****" instead.
+    - remove camera "capture" button and implement mouse or touch screen to click and hold words
+        - after selection would pop up with options to:
+            - a) change size of text
+            - b) copy to clipboard
+            - c) use thesaurus
+            - d) use dictionary
+            - e) change text colour or background colour of text
+            - f) translate text -> upon click does dropdown box of Languages
+
+3. Camera Filter System
+    - replace button "filters" on camera screen with a filter popup menu with 3 sections:
         - Saved Filters (requires database)
         - Customize Filters
         - History View
     - Add filter state persistence
     - Update camera_screen.py
-3. App Overlay Feature
+
+4. App Overlay Feature
     - Create new OverlayScreen class
     - Add platform-specific overlay handling
     - Implement transparency
     - Share filter/text functionality with camera
-4. Settings Implementation
+    - cites sauces to fact check information scanned, and used to solve basic questions.
+
+5. Settings Implementation
     - Create settings_screen.py
     - Add UI customization options
     - Add data management (clear history, etc)
     - Add settings persistence
-5. User Authentication
+    - account removal, deletion or authentication checking.
+
+6. User Authentication
     - Create auth_manager.py
     - Add OAuth integration for email providers
     - Create user profile system
     - Add cloud sync functionality
     - Implement secure storage
-6. Cross-Platform Deployment
+
+7. Cross-Platform Deployment
     - Configure buildozer for Android APK
     - Set up iOS certificates and provisioning
     - Create Windows installer
     - Add platform-specific optimizations
+
+8. apk and monitisation / perks
+    - apk design, beautify it and make it look appealing
+    - add advertisments which based on users cookies
+    - add a vip button which is used to remove ads if they pay £4.99.
+
+9. Ensure standard reaches google / steam / apple store guidelines and standard
 
 
 hierachy:
